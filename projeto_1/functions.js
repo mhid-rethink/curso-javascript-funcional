@@ -1,12 +1,23 @@
 const fs = require("fs");
 const path = require("path");
 
+const composition = (...fns) => {
+  return (valor) => {
+    return fns.reduce(async (acc, fn) => {
+      if (Promise.resolve(acc) === acc) {
+        return fn(await acc);
+      } else {
+        return fn(acc);
+      }
+    }, valor);
+  };
+};
+
 function findFilesInDir(dir) {
   return new Promise((resolve, reject) => {
     try {
-      const files = fs.readdirSync(dir);
-      const fullFiles = files.map((file) => path.join(dir, file));
-      resolve(fullFiles);
+      const files = fs.readdirSync(dir).map((file) => path.join(dir, file));
+      resolve(files);
     } catch (error) {
       reject(error, "Arquivos não encontrados");
     }
@@ -81,10 +92,11 @@ const sortByNumericAttribute = (attribute, order = "asc") => {
   return function (array) {
     const asc = (o1, o2) => o1[attribute] - o2[attribute];
     const desc = (o1, o2) => o2[attribute] - o1[attribute];
-    return array.sort(order === "asc" ? asc : desc);
+    return [...array].sort(order === "asc" ? asc : desc);
   };
 };
 module.exports = {
+  composition,
   findFilesInDir,
   elementsEndedWith,
   readFileContent,
