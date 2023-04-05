@@ -23,7 +23,7 @@ console.log(eager(3, 300));
 console.timeEnd("#1");
 
 console.time("#2");
-lazy3 = lazy(3);
+const lazy3 = lazy(3);
 console.log(lazy3(100));
 console.log(lazy3(200));
 console.log(lazy3(300));
